@@ -1,6 +1,3 @@
-DROP TABLE IF EXISTS UserAccount;
-DROP TABLE IF EXISTS Animal;
-DROP TABLE IF EXISTS CreditCard;
 DROP TABLE IF EXISTS OrderContains;
 DROP TABLE IF EXISTS OrderShipment;
 DROP TABLE IF EXISTS ShippingOption;
@@ -10,6 +7,9 @@ DROP TABLE IF EXISTS Reviews;
 DROP TABLE IF EXISTS Stores;
 DROP TABLE IF EXISTS FillsCart;
 DROP TABLE IF EXISTS SavesCard;
+DROP TABLE IF EXISTS Animal;
+DROP TABLE IF EXISTS CreditCard;
+DROP TABLE IF EXISTS UserAccount;
 
 CREATE TABLE Animal (
 	animal_ID INTEGER AUTO_INCREMENT,
@@ -26,7 +26,7 @@ CREATE TABLE Animal (
 );
 
 CREATE TABLE UserAccount (
-	User_ID INTEGER AUTO_INCREMENT,
+	user_ID INTEGER AUTO_INCREMENT,
 	userEmail VARCHAR(30) NOT NULL,
 	userPassword VARCHAR(20) NOT NULL,
 	isAdmin BOOLEAN, 
@@ -41,7 +41,7 @@ CREATE TABLE UserAccount (
 	streetName VARCHAR(20) NOT NULL,
 	streetNumber VARCHAR(10) NOT NULL,
 	aptNumber VARCHAR(10),
-	PRIMARY KEY (User_ID),
+	PRIMARY KEY (user_ID),
 	UNIQUE (userEmail)
 );
 
@@ -94,7 +94,14 @@ CREATE TABLE FillsCart (
 	user_ID INTEGER,
 	animal_ID INTEGER,
 	cartQuantity INTEGER,
-	PRIMARY KEY (user_ID, animal_ID)
+	PRIMARY KEY (user_ID, animal_ID),
+	FOREIGN KEY (user_ID) 
+		REFERENCES UserAccount(user_ID)
+		ON DELETE NO ACTION ON UPDATE CASCADE,
+	FOREIGN KEY (animal_ID) 
+		REFERENCES Animal(animal_ID)
+		ON DELETE NO ACTION ON UPDATE CASCADE
+	
 );
 
 CREATE TABLE OrderContains (
@@ -107,7 +114,13 @@ CREATE TABLE OrderContains (
 CREATE TABLE SavesCard (
 	user_ID INTEGER,
 	card_ID INTEGER,
-	PRIMARY KEY (user_ID, card_ID)
+	PRIMARY KEY (user_ID, card_ID),
+	FOREIGN KEY (user_ID) 
+		REFERENCES UserAccount(user_ID)
+		ON DELETE NO ACTION ON UPDATE CASCADE,
+	FOREIGN KEY (card_ID) 
+		REFERENCES CreditCard(card_ID)
+		ON DELETE NO ACTION ON UPDATE CASCADE
 );
 
 CREATE TABLE OrderShipment (
@@ -140,8 +153,15 @@ CREATE TABLE OrderShipment (
 	s_aptNumber VARCHAR(10),
 	warehouse_ID INTEGER,
 	shipping_ID INTEGER,
-	card_ID INTEGER,
+	user_ID INTEGER,
+	animal_ID INTEGER,
 	PRIMARY KEY (order_ID),
+	FOREIGN KEY (user_ID) 
+		REFERENCES UserAccount(user_ID)
+		ON DELETE NO ACTION ON UPDATE CASCADE,
+	FOREIGN KEY (animal_ID) 
+		REFERENCES Animal(animal_ID)
+		ON DELETE NO ACTION ON UPDATE CASCADE,
 	FOREIGN KEY (warehouse_ID) 
 		REFERENCES Warehouse(warehouse_ID)
 		ON DELETE NO ACTION ON UPDATE CASCADE,
@@ -150,7 +170,7 @@ CREATE TABLE OrderShipment (
 		ON DELETE NO ACTION ON UPDATE CASCADE,
 	FOREIGN KEY (b_country, b_stateProvince) 
 		REFERENCES TaxOption(taxCountry, taxState)
-		ON DELETE NO ACTION ON UPDATE CASCADE	
+		ON DELETE NO ACTION ON UPDATE CASCADE
 );
 
 CREATE TABLE Reviews (
@@ -160,7 +180,14 @@ CREATE TABLE Reviews (
 	overallRating INTEGER,
 	review VARCHAR(255),
 	CHECK (overallRating >= 1 AND overallRating <= 5),
-	PRIMARY KEY (user_ID, animal_ID)
+	PRIMARY KEY (user_ID, animal_ID),
+	FOREIGN KEY (user_ID) 
+		REFERENCES UserAccount(user_ID)
+		ON DELETE NO ACTION ON UPDATE CASCADE,
+	FOREIGN KEY (animal_ID) 
+		REFERENCES Animal(animal_ID)
+		ON DELETE NO ACTION ON UPDATE CASCADE
+		
 );
 
 
